@@ -43,7 +43,7 @@ public class ObjectDistanceTest extends AutoJava {
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
-        
+
         waitForStart();
 
         objectImageHeight = calculateObjectImageHeight();
@@ -57,17 +57,20 @@ public class ObjectDistanceTest extends AutoJava {
             dist = calculateDistance(); //Convert mm to inches
             telemetry.addLine(String.valueOf(dist));
 
+            telemetry.update();
+
+            moveBot(dist * Math.sin(RobotSpecs.cameraAngle), 1,0,0); //Move the horizontal distance of the robot to the prop
+            //moveBot(dist,1,0,0); //Move the Straightforward distance of the camera to prop
+            lowerArm();
+
+            camera.closeCameraDevice();
+
         } else {
-            telemetry.addLine("Team prop not placed center but rather " + position);
+            telemetry.addLine("Not Center: Team Prop detected " + position);
+            telemetry.update();
         }
 
-        telemetry.update();
 
-        moveBot(dist * Math.sin(RobotSpecs.cameraAngle), 1,0,0); //Move the horizontal distance of the robot to the prop
-        //moveBot(dist,1,0,0); //Move the Straightforward distance of the camera to prop
-        lowerArm();
-
-        camera.closeCameraDevice();
 
     }
 
