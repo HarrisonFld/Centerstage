@@ -28,19 +28,25 @@ public class ObjectDistanceTest extends AutoJava {
         super(true); //Must be tested from the blue side
     }
 
-    public static void main(String[] args) {
-        new ObjectDistanceTest().runOpMode();
-    }
-
     @Override
     public void runOpMode() {
 
-        this.initCamera();
         this.initMotors();
+        this.initCamera();
 
-        objectImageHeight = calculateObjectImageHeight(); //Replace with some method that gets this
+        while (!isStarted()) {
+            telemetry.addData("White percent of LCR mats:", pixelDetection.getLeftPercent() + " "
+                    + pixelDetection.getCenterPercent() + " " + pixelDetection.getRightPercent());
+            telemetry.addData("ROTATION1: ", pixelDetection.getPosition());
+            telemetry.update();
+        }
 
+        telemetry.addLine("Waiting for start");
+        telemetry.update();
+        
         waitForStart();
+
+        objectImageHeight = calculateObjectImageHeight();
 
         PixelDetection.BackdropPosition position = pixelDetection.getPosition();
         double dist = 0D;

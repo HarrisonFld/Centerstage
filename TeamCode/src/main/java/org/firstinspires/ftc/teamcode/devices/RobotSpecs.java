@@ -9,10 +9,10 @@ public class RobotSpecs {
 
     // TODO: Update Parameters of Robot
     public static final double
-            robotHeight = 3D,
-            robotWidth = 3D,
-            cameraHeightFromGround = 3D,
-            cameraAngle = 30;
+            robotHeight = 336.55,
+            robotWidth = 336.55,
+            cameraHeightFromGround = 334.55,
+            cameraAngle = 15.4;
 
 
 }
