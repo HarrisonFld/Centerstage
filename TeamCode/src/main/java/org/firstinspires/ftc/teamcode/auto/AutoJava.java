@@ -344,24 +344,35 @@ public abstract class AutoJava extends LinearOpMode {
     // Common functions for autonomous instructions
     protected void tapePlace() {
         restArm();
-        sleep(1000);
+        sleep(500);
         armServo.setPosition(0.55);
         elbowServo.setPosition(0.27);
-        sleep(1000);
+        sleep(500);
         claw1.setPosition(0.0);
-        sleep(750);
+        sleep(500);
         armServo.setPosition(0.55);
         elbowServo.setPosition(0.3075);
-        sleep(750);
+        sleep(500);
         claw1.setPosition(0.12);
-        sleep(1000);
+        sleep(650);
         restArm();
     }
 
 
     protected void backdropPlace() {
         claw1.setPosition(0);
-        sleep(1000);
+        sleep(750);
+        armServo.setPosition(0.4927);
+        elbowServo.setPosition(0.5483);
+    }
+
+    // Mainly to prevent interference with teammate's pixel placement
+    protected void backdropPlaceHigh() {
+        armServo.setPosition(0.005);
+        elbowServo.setPosition(0.0622);
+        sleep(750);
+        claw1.setPosition(0);
+        sleep(750);
         armServo.setPosition(0.4927);
         elbowServo.setPosition(0.5483);
     }
@@ -370,6 +381,12 @@ public abstract class AutoJava extends LinearOpMode {
     protected void lowerArm() {
         armServo.setPosition(0.55);
         elbowServo.setPosition(0.32485);
+    }
+
+    // Lowers the arm so that the robot can move under the truss
+    protected void trussArm() {
+        armServo.setPosition(0.4927);
+        elbowServo.setPosition(0.5283);
     }
 
     protected void restArm() {

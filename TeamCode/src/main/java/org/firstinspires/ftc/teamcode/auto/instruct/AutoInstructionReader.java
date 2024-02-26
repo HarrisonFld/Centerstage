@@ -43,7 +43,10 @@ public class AutoInstructionReader {
         }
 
 
-        String actualData = rawLine.replaceAll("\\r|\\n", "").trim();
+        String actualData = rawLine
+                .replaceAll("\\r|\\n", "")
+                .replaceAll((openParenthesisRegex + "|" + closeParenthesisRegex + "|" + semicolonRegex), "")
+                .trim();
         ArrayList<String> rawOperationArgs = new ArrayList<>(Arrays.asList(actualData.split(argJoinerRegex)));
 
         String originalOperationName = rawOperationArgs.get(0);
@@ -54,6 +57,12 @@ public class AutoInstructionReader {
         }
         // After getting the operation name, remove it from the array for it to stay true to its variable name
         rawOperationArgs.remove(0);
+
+
+        rawOperationArgs = new ArrayList<>(rawOperationArgs.stream()
+                .map(arg -> arg.trim())
+                .filter(arg -> arg.length() > 0)
+                .collect(Collectors.toCollection(ArrayList::new)));
 
 
         ArrayList<String> operationArgs = new ArrayList<>();
@@ -85,22 +94,6 @@ public class AutoInstructionReader {
                 break;
 
             }
-            case "setPosition": {
-
-                if (rawOperationArgs.size() != 2) {
-                    throw new IOException("Incorrect number of parameters at setPosition call at line " + this.getLineNumber());
-                }
-                if (!servoExists(rawOperationArgs.get(0))) {
-                    throw new IOException("Servo " + rawOperationArgs.get(0) + " for setPosition call does not exist at line " + this.getLineNumber());
-                }
-                if (!isDouble(rawOperationArgs.get(1))) {
-                    throw new IOException("Servo pos " + rawOperationArgs.get(1) + " is not a valid double for setPosition call at line " + this.getLineNumber());
-                }
-                operationArgs.add(rawOperationArgs.get(0));
-                operationArgs.add(rawOperationArgs.get(1));
-                break;
-
-            }
             case "sleep": {
 
                 if (rawOperationArgs.size() != 1) {
@@ -108,6 +101,35 @@ public class AutoInstructionReader {
                 }
                 if (!isInteger(rawOperationArgs.get(0))) {
                     throw new IOException("Parameter " + rawOperationArgs.get(0) + " is not a valid integer for sleep call at line " + this.getLineNumber());
+                }
+                operationArgs.add(rawOperationArgs.get(0));
+                break;
+
+            }
+            case "setPower":
+            case "setPosition": {
+
+                if (rawOperationArgs.size() != 2) {
+                    throw new IOException("Incorrect number of parameters at " + operationName + " call at line " + this.getLineNumber());
+                }
+                if (!servoExists(rawOperationArgs.get(0))) {
+                    throw new IOException("Servo " + rawOperationArgs.get(0) + " for " + operationName + " call does not exist at line " + this.getLineNumber());
+                }
+                if (!isDouble(rawOperationArgs.get(1))) {
+                    throw new IOException("Servo pos " + rawOperationArgs.get(1) + " is not a valid double for " + operationName + " call at line " + this.getLineNumber());
+                }
+                operationArgs.add(rawOperationArgs.get(0));
+                operationArgs.add(rawOperationArgs.get(1));
+                break;
+
+            }
+            case "powerFactor": {
+
+                if (rawOperationArgs.size() != 1) {
+                    throw new IOException("Incorrect number of parameters at " + operationName + " assignment at line " + this.getLineNumber());
+                }
+                if (!isDouble(rawOperationArgs.get(0))) {
+                    throw new IOException(operationName + " assigned value " + rawOperationArgs.get(0) + " is not a valid double at line " + this.getLineNumber());
                 }
                 operationArgs.add(rawOperationArgs.get(0));
                 break;
@@ -122,26 +144,20 @@ public class AutoInstructionReader {
                 rawOperationArgs.add(0, originalOperationName);
                 operationArgs = rawOperationArgs;
                 break;
+            case "":
             case multiCommentBegin:
             case multiCommentEnd:
             case stopMarker:
+            case "restArm":
+            case "trussArm":
+            case "lowerArm":
+            case "tapePlace":
+            case "backdropPlace":
                 break;
             default:
-                if (!
-                    (
-                        Stream.of(AutoJava.class.getDeclaredMethods())
-                            .map(Method::getName)
-                            .collect(Collectors.toCollection(ArrayList::new))
-                    ).contains(operationName))
-                {
-                    throw new IOException("Unknown operation " + operationName);
-                }
-                break;
+                throw new IOException("Unknown operation " + operationName + " with specific provided arguments at line " + this.getLineNumber());
 
         }
-        operationArgs = new ArrayList<>(operationArgs.stream()
-                .map(arg -> arg.trim())
-                .collect(Collectors.toCollection(ArrayList::new)));
 
         return new AutoOperation(operationName, operationArgs);
 
@@ -166,6 +182,9 @@ public class AutoInstructionReader {
             return false;
         }
     }
+
+
+
 
 
     private boolean servoExists(String servoName) {

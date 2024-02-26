@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.auto.instruct.AutoInstructionConsta
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.auto.instruct.AutoInstructionConstants;
 import org.firstinspires.ftc.teamcode.auto.instruct.AutoInstructionReader;
 import org.firstinspires.ftc.teamcode.auto.instruct.AutoOperation;
 
@@ -35,7 +36,7 @@ public class AutoInstructionReaderJava extends AutoJava {
         telemetry.update();
         try {
 
-            AutoInstructionReader reader = new AutoInstructionReader("/sdcard/autonomous/auto_instruct.txt");
+            AutoInstructionReader reader = new AutoInstructionReader(AutoInstructionConstants.autoInstructPath);
 
             AutoOperation autoOperation;
             boolean skipOperations = false;
@@ -58,6 +59,9 @@ public class AutoInstructionReaderJava extends AutoJava {
                         skipCurrOperation = true;
                         break;
                     case stopMarker:
+                        if (skipCurrOperation || skipOperations) {
+                            break;
+                        }
                         return;
                 }
                 if (skipCurrOperation || skipOperations) {
@@ -70,43 +74,81 @@ public class AutoInstructionReaderJava extends AutoJava {
                 switch (operationName) {
 
                     case "moveBot":
-                    case "turnBot":
-                        finalOperationArgs = operationArgs.stream()
+                        ArrayList<Double> moveBotArgs = operationArgs.stream()
+                                .map(String::valueOf)
                                 .map(Double::parseDouble)
                                 .collect(Collectors.toCollection(ArrayList::new));
+                        moveBot(moveBotArgs.get(0), moveBotArgs.get(1), moveBotArgs.get(2), moveBotArgs.get(3));
                         break;
-
+                    case "turnBot":
+                        turnBot(Double.parseDouble(operationArgs.get(0)));
+                        break;
                     case "sleep":
-                        finalOperationArgs = operationArgs.stream()
-                                .map(Long::parseLong)
-                                .collect(Collectors.toCollection(ArrayList::new));
+                        sleep(Long.parseLong(operationArgs.get(0)));
                         break;
-
 
                     case "setPosition":
                         Double servoPos = Double.parseDouble(operationArgs.get(1));
-                        try {
-                            execHardwareMethod(operationArgs.get(0), operationName, servoPos);
-                        } catch(Exception e) {
-                            throw new IOException(e);
+                        switch(operationArgs.get(0)) {
+                            case "armServo":
+                                armServo.setPosition(servoPos);
+                                break;
+                            case "elbowServo":
+                                elbowServo.setPosition(servoPos);
+                                break;
+                            case "claw1":
+                                claw1.setPosition(servoPos);
+                                break;
                         }
+                        break;
+
+                    case "setPower":
+                        Double powerFac = Double.parseDouble(operationArgs.get(1));
+                        switch(operationArgs.get(0)) {
+                            case "right_drive1":
+                                right_drive1.setPower(powerFac);
+                                break;
+                            case "right_drive2":
+                                right_drive2.setPower(powerFac);
+                                break;
+                            case "left_drive1":
+                                left_drive1.setPower(powerFac);
+                                break;
+                            case "left_drive2":
+                                left_drive2.setPower(powerFac);
+                                break;
+                        }
+                        break;
+
+                    case "powerFactor":
+                        telemetry.addLine("CHANGING POWER FACTOR TO " + operationArgs.get(0));
+                        telemetry.update();
+                        this.powerFactor = Double.parseDouble(operationArgs.get(0));
+                        telemetry.addLine(String.valueOf(this.powerFactor));
+                        telemetry.update();
+                        break;
+
+
+                    case "restArm":
+                        restArm();
+                        break;
+                    case "trussArm":
+                        trussArm();
+                        break;
+                    case "lowerArm":
+                        lowerArm();
+                        break;
+                    case "tapePlace":
+                        tapePlace();
+                        break;
+                    case "backdropPlace":
+                        backdropPlace();
                         break;
 
                     default:
                         finalOperationArgs = operationArgs;
                         break;
 
-                }
-
-
-                try {
-                    if (finalOperationArgs.size() > 0) {
-                        execAutoMethod(operationName, finalOperationArgs);
-                    } else {
-                        execAutoMethod(operationName);
-                    }
-                } catch (Exception e) {
-                    throw new IOException(e);
                 }
 
 
@@ -117,6 +159,7 @@ public class AutoInstructionReaderJava extends AutoJava {
 
         } catch (IOException e) {
             telemetry.addLine("An error occurred:");
+            telemetry.addLine(e.getMessage());
             telemetry.addLine(Stream.of(e.getStackTrace())
                             .map(String::valueOf)
                             .collect(Collectors.joining("\n")));
@@ -125,49 +168,6 @@ public class AutoInstructionReaderJava extends AutoJava {
         }
 
 
-    }
-
-
-
-
-
-
-
-
-
-    private <T> void execMethod(Class object, String methodName, T... arguments) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
-        ArrayList<?> args = new ArrayList<>(Arrays.asList(arguments));
-        if (args.size() <= 0) {
-            object.getDeclaredMethod(methodName).invoke(this);
-            return;
-        }
-
-        object.getDeclaredMethod(methodName, args.stream()
-                .map(param -> param.getClass())
-                .toArray(Class[]::new)).invoke(this, args);
-    }
-
-
-    private void execMethod(Class object, String methodName) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        execMethod(object, methodName, dummyArr);
-    }
-
-
-    private <T> void execAutoMethod(String methodName, T... args) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        execMethod(this.getClass(), methodName, args);
-    }
-
-    private void execAutoMethod(String methodName) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        execAutoMethod(methodName, dummyArr);
-    }
-
-    private <T> void execHardwareMethod(String deviceName, String methodName, T... args) throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        execMethod(this.getClass().getDeclaredField(deviceName).getDeclaringClass(), methodName, args);
-    }
-
-    private void execHardwareMethod(String deviceName, String methodName) throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        execHardwareMethod(deviceName, methodName, dummyArr);
     }
 
 

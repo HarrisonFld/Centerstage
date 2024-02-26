@@ -7,11 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.CustomTelemetryLogger;
+import org.firstinspires.ftc.teamcode.auto.instruct.AutoInstructionCodeSerializer;
+import org.firstinspires.ftc.teamcode.auto.instruct.AutoInstructionConstants;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import android.os.Environment;
 
 /**
  * Gamepad 1 drive trains
@@ -33,11 +36,12 @@ public class DebugJava extends LinearOpMode {
     private ServoSettings servoSettings = new ServoSettings();
     private Map<String, ServoSettings> servoPositions = new HashMap<>();
     private CustomTelemetryLogger logger;
+    private CustomTelemetryLogger textOutputLogger;
 
 
     private boolean buttonPressed = false;
 
-    private final double intCon = 8.727272;
+    protected final double intCon = 8.727272;
 
 
     public void initMotors() {
@@ -92,6 +96,7 @@ public class DebugJava extends LinearOpMode {
         double elbowPastPos = 0;
         int numberlog = 0;
         int clawChanged = 0;
+        int tapePlace = 0;
         boolean debug = false;
         boolean depadPressed = false;
         boolean turn = false;
@@ -108,9 +113,12 @@ public class DebugJava extends LinearOpMode {
         try {
             waitForStart();
             if (debug) {
-                String fileName = "/sdcard/Logs/" + new Date().getHours() + "_" + new Date().getMinutes() +"_" + new Date().getSeconds() +".txt";
-                logger = new CustomTelemetryLogger(fileName);
-                telemetry.addData("name of file: ", fileName);
+                String logFilePath = String.format("/sdcard/Logs/"+ new Date().getHours() + "_" + new Date().getMinutes() + "_" + new Date().getSeconds() +".txt", Environment.getExternalStorageDirectory().getAbsolutePath());
+                logger = new CustomTelemetryLogger(logFilePath);
+                textOutputLogger = new CustomTelemetryLogger(AutoInstructionConstants.autoInstructPath);
+                telemetry.addData("name of file: ", logFilePath);
+                telemetry.addData("name of auto instruct file: ", AutoInstructionConstants.autoInstructPath);
+                telemetry.update();
 
             }
             while (opModeIsActive()) {
@@ -134,32 +142,35 @@ public class DebugJava extends LinearOpMode {
                         numberlog++;
                         double rightDif = (right_drive1.getCurrentPosition() - startposright);
                         double leftDif = (left_drive1.getCurrentPosition() - startposleft);
-                        logger.logData("log num: " + numberlog);
-                        logger.logData("right movement:" + rightDif);
-                        logger.logData("left movement:" + leftDif);
-                        logger.logData("elbow pos:" + elbowServo.getPosition());
-                        logger.logData("arm pos:" + armServo.getPosition());
+                        logger.logData("log num: " + numberlog + "\n");
+                        logger.logData("right movement:" + rightDif+ "\n");
+                        logger.logData("left movement:" + leftDif+ "\n");
+                        logger.logData("elbow pos:" + elbowServo.getPosition()+ "\n");
+                        logger.logData("arm pos:" + armServo.getPosition()+ "\n");
                         telemetry.addData("log end", numberlog);
                         telemetry.update();
                         boolean vertical = ((rightDif >= 0));
                         switch (allowOtherMovement)
                         {
                             case 1:
-//                                moves += "moveBotExact(" + Math.abs(leftDif) + "," + ((leftDif < 0) ? -1 : 1) +",0,0);\nsleep(500);\n";
-                                moves += "moveBot(" + ((Math.abs(leftDif))*this.intCon) + "," + ((leftDif < 0) ? -1 : 1) + ", 0, 0);\nsleep(500);\n";
+
+                                telemetry.addData("vert", (leftDif < 0));
+                                telemetry.update();
+                                moves += "moveBot(" + ((Math.abs(leftDif))/intCon) + "," + ((leftDif < 0) ? -1 : 1) + ", 0, 0);\nsleep(500);\n";
+                                break;
                             case 2:
-//                                moves += "moveBotExact(" + Math.abs(rightDif) + ",0,0," + ((rightDif < 0) ? -1 : 1) + ");\nsleep(500);\n";
-                                moves += "moveBot(" + ((Math.abs(rightDif))*this.intCon) + ",0,0," + ((rightDif < 0) ? -1 : 1) + ");\nsleep(500);\n";
+                                telemetry.addData("horz", (rightDif > 0));
+                                telemetry.update();
+                                moves += "moveBot(" + ((Math.abs(rightDif))/intCon) + ",0,0," + ((rightDif > 0) ? -1 : 1) + ");\nsleep(500);\n";
+                                break;
                             case 3:
+                                telemetry.addLine("turn");
+                                telemetry.update();
                                 moves +=  ("turnBot(" + (ticsToDegrees((int)(Math.round(leftDif))) + ");\nsleep(1000);\n"));
                                 break;
                         }
                         allowOtherMovement = 0;
 
-                        if((Math.round(elbowServo.getPosition())) == Math.round(elbowPastPos) || (Math.round(armPastPos) == Math.round(armServo.getPosition())))
-                        {
-                            moves += "armServo.setPosition(" + armServo.getPosition() + ");\nsleep(500);\n" + "elbowServo.setPosition(" + elbowServo.getPosition() + ");\nsleep(500);\n";
-                        }
                         switch (clawChanged)
                         {
                             case 1:
@@ -184,7 +195,8 @@ public class DebugJava extends LinearOpMode {
                     {
                         depadPressed = true;
                         logger.logData(moves);
-                        telemetry.addLine("logged moves");
+                        textOutputLogger.logData("\n\n" + AutoInstructionCodeSerializer.serialize(moves) + "\n\n");
+                        telemetry.addData("logged moves: ", moves);
                         telemetry.update();
 
                     }
@@ -201,37 +213,31 @@ public class DebugJava extends LinearOpMode {
                     if(gamepad1.dpad_left && !depadPressed)
                     {
                         depadPressed = true;
-                        sleep(1000);
-                        armServo.setPosition(0.55);
-                        elbowServo.setPosition(0.27);
-                        sleep(1000);
-                        claw1.setPosition(0.0);
-                        sleep(500);
-                        armServo.setPosition(0.55);
-                        elbowServo.setPosition(0.35);
-                        claw1.setPosition(0.12);
-                        sleep(1000);
-                        armServo.setPosition(0.4927);
-                        elbowServo.setPosition(0.50);
-                        sleep(1000);
-                        moves += "sleep(500);\n" +
-                                "armServo.setPosition(0.55);\n" +
-                                "elbowServo.setPosition(0.27);\n" +
-                                "sleep(1000);\n" +
-                                "claw1.setPosition(0.0);\n" +
-                                "sleep(500);\n" +
-                                "armServo.setPosition(0.55);\n" +
-                                "elbowServo.setPosition(0.35);\n" +
-                                "claw1.setPosition(0.12);\n" +
-                                "sleep(1000);\n" +
-                                "armServo.setPosition(0.4927);\n" +
-                                "elbowServo.setPosition(0.50);\n" +
-                                "sleep(1000);\n";
-                        armPastPos = armServo.getPosition();
-                        elbowPastPos = elbowServo.getPosition();
+                        tapePlace++;
+                        if(tapePlace == 1) {
+                            buttonPressed = true;
+                            lowerArm();
+                            moves += "lowerArm();\n";
+                            telemetry.addLine("lower pickup");
+                            telemetry.update();
+                        }
+                        if(tapePlace == 2) {
+                            buttonPressed = true;
+                            tapePlace();
+                            telemetry.addLine("tape pickup");
+                            telemetry.update();
+                            moves += "tapePlace();\n";
+                        }
+                        if(tapePlace == 3) {
+                            buttonPressed = true;
+                            backdropPlace();
+                            moves += "backdropPlace();\n";
+                            telemetry.addLine("drop pickup");
+                            telemetry.update();
+                            tapePlace = 0;
+                        }
                         clawChanged = 0;
-                        telemetry.addLine("drop pickup");
-                        telemetry.update();
+
 
                     }
                     if(gamepad1.right_stick_x != 0)
@@ -355,8 +361,12 @@ public class DebugJava extends LinearOpMode {
             if (logger != null) {
                 logger.close();
             }
+            if (textOutputLogger != null) {
+                textOutputLogger.close();
+            }
         }
-        if (debug && logger != null) {
+        if (debug && logger != null && textOutputLogger != null) {
+            textOutputLogger.close();
             logger.close();
             telemetry.addLine("logger close");
             telemetry.update();
@@ -406,7 +416,37 @@ public class DebugJava extends LinearOpMode {
         }
 
     }
+    public void lowerArm() {
+        armServo.setPosition(0.55);
+        elbowServo.setPosition(0.32485);
+    }
 
+    public void tapePlace() {
+        restArm();
+        sleep(1000);
+        armServo.setPosition(0.55);
+        elbowServo.setPosition(0.27);
+        sleep(1000);
+        claw1.setPosition(0.0);
+        sleep(750);
+        armServo.setPosition(0.55);
+        elbowServo.setPosition(0.3075);
+        sleep(750);
+        claw1.setPosition(0.12);
+        sleep(1000);
+        restArm();
+    }
+
+    public void restArm() {
+        armServo.setPosition(0.4927);
+        elbowServo.setPosition(0.50);
+    }
+    protected void backdropPlace() {
+        claw1.setPosition(0);
+        sleep(1000);
+        armServo.setPosition(0.4927);
+        elbowServo.setPosition(0.5483);
+    }
     private void moveBot(float vertical, float pivot, float horizontal) {
         pivot *= 0.5;
         right_drive1.setPower(powerFactor * (-pivot + (vertical - horizontal)));
@@ -437,6 +477,8 @@ public class DebugJava extends LinearOpMode {
         public double getArmPos() {
             return armPos;
         }
+
+
     }
 }
 

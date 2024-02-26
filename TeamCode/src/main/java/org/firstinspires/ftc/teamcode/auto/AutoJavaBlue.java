@@ -29,28 +29,44 @@ public class AutoJavaBlue extends AutoJava {
         switch (pixelDetection.getPosition()) {
 
             case LEFT: {
-                right_drive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                right_drive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                left_drive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                left_drive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                // 27 inches input
-                moveBot(87.824, 0, 0, 1);
+
+// 27 inches input
+                moveBot(59.824, 0, 0, 1);
                 sleep(1000);
-                // 45 inches input
-                moveBot(114.944, 1, 0, 0);
+// 45 inches input
+                moveBot(96.944, 1, 0, 0);
                 sleep(500);
-                turnBot(-120);
-                sleep(1000);
+                turnBot(-115);
+                sleep(500);
                 lowerArm();
-                sleep(1000);
-                // 39 inches input
-                // 27 inches input
-                moveBot(87.824, 1, 0, 0);
                 sleep(500);
-                // 8 inches input
-                moveBot(24.364, -1, 0, 0);
-                sleep(1000);
+// 39 inches input
+// 27 inches input
+// -5.5 inches input 80.824-16.014
+                moveBot(47.136, 1, 0, 0);
+                sleep(500);
+// 8 inches input
+                moveBot(14.364, -1, 0, 0);
+                sleep(500);
                 tapePlace();
+                sleep(1000);
+                moveBot(27.041668920139077, -1, 0, 0);
+                sleep(1000);
+                moveBot(92.12500767708399, 0, 0, -1);
+                trussArm();
+                sleep(1000);
+/*
+moveBot(94.64584122048677, 1, 0, 0);
+sleep(1000);
+moveBot(181.72918181076517, 1, 0, 0);
+*/
+                moveBot(276.37502303125194, 1, 0, 0);
+                sleep(1000);
+                moveBot(51.333337611111475, 0, 0, 1);
+                sleep(1000);
+                moveBot(51.906254325521196, 1, 0, 0);
+                sleep(1000);
+                backdropPlace();
                 break;
 
             }
@@ -58,16 +74,35 @@ public class AutoJavaBlue extends AutoJava {
 
             case CENTER: {
 
-                moveBot(23, 0, 0, 1);
+                moveBot(10, 0, 0, 1);
+                sleep(400);
+// 53.625 inches input
                 moveBot(20, 1, 0, 0);
-                sleep(1000);
+                sleep(500);
                 lowerArm();
+                sleep(500);
+                moveBot(90, 1, 0, 0);
                 sleep(1000);
-                moveBot(67, 1, 0, 0);
-                sleep(1150);
-                moveBot(20, -1, 0, 0);
-                sleep(1150);
+                moveBot(30, -1, 0, 0);
+                sleep(500);
                 tapePlace();
+                sleep(1000);
+                turnBot(-116);
+                sleep(1000);
+                moveBot(25.3229187769099, -1, 0, 0);
+                sleep(1000);
+                moveBot(74.25000618750052, 0, 0, -1);
+                trussArm();
+                sleep(1000);
+                moveBot(80.32292336024362, 1, 0, 0);
+                sleep(1000);
+                moveBot(186.54168221180686, 1, 0, 0);
+                sleep(1000);
+                moveBot(71.50000595833383, 0, 0, 1);
+                sleep(1000);
+                moveBot(47.895837324653115, 1, 0, 0);
+                sleep(1000);
+                backdropPlace();
                 break;
 
             }
@@ -75,15 +110,56 @@ public class AutoJavaBlue extends AutoJava {
 
             case RIGHT: {
 
-                moveBot(47, 0, 0, 1);
-                sleep(1000);
+// 13.5 inches input PLUS 7.5 inches input 31.04 + 22.694
+                moveBot(57.934, 0, 0, 1);
+                sleep(500);
+// 29 inches input
+                moveBot(24, 1, 0, 0);
+                sleep(500);
                 lowerArm();
-                sleep(1000);
-                moveBot(43, 1, 0, 0);
-                sleep(850);
-                moveBot(3, -1, 0, 0);
+                sleep(500);
+                moveBot(74.504, 1, 0, 0);
+                sleep(500);
+// 10.5 inches input
+                moveBot(32.714, -1, 0, 0);
                 sleep(1000);
                 tapePlace();
+/*
+sleep(1000);
+moveBot(41.79, -1, 0, 0);
+sleep(500);
+moveBot(24, -1, 0, 0);
+sleep(500);
+moveBot(37.934, 0, 0, 1);
+sleep(1000);
+moveBot(96.944, 1, 0, 0);
+sleep(10000);
+turnBot(115);
+sleep(1000);
+moveBot(179.088, 1, 0, 0);
+sleep(500);
+moveBot(100, 1, 0, 0);
+sleep(500);
+*/
+                sleep(1000);
+                moveBot(41.79, -1, 0, 0);
+                sleep(500);
+                turnBot(-115);
+                sleep(500);
+                moveBot(10.020834001736167, 0, 0, -1);
+                sleep(500);
+                trussArm();
+                sleep(500);
+                moveBot(97.85417482118125, 1, 0, 0);
+                sleep(500);
+                moveBot(204.41668370139033, 1, 0, 0);
+                sleep(500);
+                moveBot(97.39584144965346, 0, 0, 1);
+                sleep(500);
+                moveBot(26.010418834201573, 1, 0, 0);
+                sleep(500);
+                backdropPlace();
+                sleep(500);
                 break;
 
             }
