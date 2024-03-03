@@ -9,7 +9,10 @@ import org.firstinspires.ftc.teamcode.devices.PropSpecs;
 import org.firstinspires.ftc.teamcode.devices.RobotSpecs;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.videoio.VideoCapture;
+
+import java.util.HashMap;
 
 /**
  * Small test to see if the distance of the team prop from the camera can be calculated
@@ -22,11 +25,11 @@ import org.opencv.videoio.VideoCapture;
 @Autonomous(name = "Team Prop Distance Test", group = "Auto")
 public class ObjectDistanceTest extends AutoJava {
 
-    private double objectImageHeight; //Units: pixels
-
     protected ObjectDistanceTest() {
         super(true); //Must be tested from the blue side
     }
+
+
 
     @Override
     public void runOpMode() {
@@ -41,34 +44,51 @@ public class ObjectDistanceTest extends AutoJava {
             telemetry.update();
         }
 
-        telemetry.addLine("Waiting for start");
+
+        double[] lowerBlueBounds = { 16,43,127,255 };
+        double[] upperBlueBounds = { 102,168,255 };
+        // Change later, calculate min width and height of team prop (recorded in camera res units) by getting camera picture and doing math involving
+        // the ratio between the pixel size of the camera image and the resolution
+        ColorLocationPipeline colorPipeline = new ColorLocationPipeline(lowerBlueBounds, upperBlueBounds, 10, 10);
+        camera.setPipeline(colorPipeline);
+
+        // Wait for pipeline to process. I don't think this is needed, but for now just keep it purely for early testing and development purposes
+        sleep(3000);
+        camera.closeCameraDevice();
+
+
+        HashMap<Integer[], Integer[]> colorLocs = colorPipeline.getColorLocs();
+        telemetry.addLine("Found locations involving blue:");
+        colorLocs.forEach((cols, rows) -> {
+            telemetry.addData("Columns:", cols);
+            telemetry.addData("Rows:", rows);
+        });
         telemetry.update();
 
-        waitForStart();
 
-        objectImageHeight = calculateObjectImageHeight();
+        // THIS IS TEMPORARY
+        Integer[] rows = colorLocs.entrySet().stream().toArray(Integer[]::new);
+        double objectImageHeight = rows[1] - rows[0];
+
 
         PixelDetection.BackdropPosition position = pixelDetection.getPosition();
-        double dist = 0D;
 
         //Must be tested on the center
         if (position == PixelDetection.BackdropPosition.CENTER) {
 
-            dist = calculateDistance(); //Convert mm to inches
+            double dist = calculateDistance(objectImageHeight); //Convert mm to inches
             telemetry.addLine(String.valueOf(dist));
-
             telemetry.update();
 
             moveBot(dist * Math.sin(RobotSpecs.cameraAngle), 1,0,0); //Move the horizontal distance of the robot to the prop
             //moveBot(dist,1,0,0); //Move the Straightforward distance of the camera to prop
-            lowerArm();
+//            lowerArm();
             
         } else {
             telemetry.addLine("Not Center: Team Prop detected " + position);
             telemetry.update();
         }
-
-        camera.closeCameraDevice();
+//        camera.closeCameraDevice();
 
     }
 
@@ -85,67 +105,14 @@ public class ObjectDistanceTest extends AutoJava {
 
     }
 
-    protected double calculateObjectImageHeight() {
-
-        VideoCapture video = new VideoCapture(0);
-        Mat frame = new Mat(CvType.CV_8UC4);
-
-        video.read(frame);
-
-        //Temp to see if the camera width can be retrieved
-        //telemetry.addLine("Frame Width" + String.valueOf(video.get(Videoio.CAP_PROP_FRAME_WIDTH)));
-        //telemetry.update();
-
-        double[] blueSampleRGB = {16, 43, 127};
-
-        double highestRow = 0;
-        double lowestRow = frame.rows();
-        int threshold = 10;
-
-        /*
-        Scalar upper_cyan_bounds = new Scalar(102,158,255,255),
-                lower_cyan_bounds = new Scalar(16,43,127,255),
-                lower_red_bounds = new Scalar(79, 17, 6, 255),
-                upper_red_bounds = new Scalar(213, 70, 38, 255);
-        Core.inRange(frame, lower_cyan_bounds, upper_cyan_bounds, frame);
-         */
-
-        for (int row = 0; row < frame.rows(); row++) {
-            cols:
-            for (int col = 0; col < frame.cols(); col++) {
-
-                double[] pixelSampleRGB = frame.get(row, col);
-
-                for (double blueRGB : blueSampleRGB) {
-                    for (double pixelRGB : pixelSampleRGB) {
-
-                        //Check if it this pixel meets the threshold
-                        if (!(Math.abs(blueRGB - pixelRGB) <= threshold)) {
-                            continue cols;
-                        }
-
-                    }
-                }
-
-                highestRow = (row > highestRow) ? row : highestRow;
-                lowestRow = (row < lowestRow) ? row : highestRow;
-
-            }
-        }
-
-        frame.release();
-        video.release();
-
-        return highestRow - lowestRow;
-
-    }
-
     /**
+     * @param {double} units in pixels
      * @return distance in millimeters
      */
-    protected double calculateDistance() {
+    private double calculateDistance(double objectImageHeight) {
         return (CameraSpecs.focalLength * objectImageHeight * CameraSpecs.cameraResHeight)
                 / (PropSpecs.propHeight * CameraSpecs.sensorHeightMM);
     }
+
 
 }
