@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.devices;
 public final class PropSpecs {
 
     // TODO: Update Prop Measurements
-    public static final double //Units: MM
+    public static final float //Units: MM
             propHeight = 90,
             propWidth = 90;
 

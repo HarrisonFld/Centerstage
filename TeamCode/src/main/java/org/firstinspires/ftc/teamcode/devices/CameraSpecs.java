@@ -11,14 +11,14 @@ public final class CameraSpecs {
 
     public static final String cameraModel = "Logitech C270";
     public static final int FOV = 60;
-    public static final double
-            focalLength = 4D,
-            physicalHeightMM = 72.91D,
-            physicalWidthMM = 31.91D,
+    public static final float
+            focalLength = 4F,
+            physicalHeightMM = 72.91F,
+            physicalWidthMM = 31.91F,
             physicalWeightG = 75,
             dFoV = 55, //Diagonal FOV
-            sensorHeightMM = 2.02D,
-            sensorWidthMM = 3.58D;
+            sensorHeightMM = 2.02F,
+            sensorWidthMM = 3.58F;
 
     public static final int
             cameraResHeight = 240,
