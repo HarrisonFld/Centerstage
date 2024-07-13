@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
+
+import org.firstinspires.ftc.teamcode.auto.AutoJava;
 
 public abstract class AutoJavaRedBackBase extends AutoJava {
 

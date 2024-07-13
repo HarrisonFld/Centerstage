@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutoJavaRedBackBackdropRightPark", group = "Auto")
-public class AutoJavaRedBackBackdropRightPark extends AutoJavaRedBackBase {
+@Autonomous(name = "AutoJavaBlueBackBackdropLeftPark", group = "Archived")
+public class AutoJavaBlueBackBackdropLeftPark extends AutoJavaBlueBackBase {
 
 
-    public AutoJavaRedBackBackdropRightPark() {
-        super(false);
+    public AutoJavaBlueBackBackdropLeftPark() {
+        super(true);
     }
 
 
@@ -26,6 +26,6 @@ public class AutoJavaRedBackBackdropRightPark extends AutoJavaRedBackBase {
         this.commonAutoInit();
         this.tapeAuto();
         this.backdropAuto();
-        this.rightPark();
+        this.leftPark();
     }
 }

@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutoJavaRedBackRightPark", group = "Auto")
-public class AutoJavaRedBackRightPark extends AutoJavaRedBackBase {
+@Autonomous(name = "AutoJavaBlueBackLeftPark", group = "Archived")
+public class AutoJavaBlueBackLeftPark extends AutoJavaBlueBackBase {
 
 
-    public AutoJavaRedBackRightPark() {
-        super(false);
+    public AutoJavaBlueBackLeftPark() {
+        super(true);
     }
 
 
@@ -29,30 +29,32 @@ public class AutoJavaRedBackRightPark extends AutoJavaRedBackBase {
         switch(pixelDetection.getPosition()) {
             case LEFT:
                 sleep(500);
-                moveBot(41.79, -1, 0, 0);
+                moveBot(27.041668920139077, -1, 0, 0);
                 sleep(500);
-                turnBot(115);
-                sleep(500);
-                moveBot(10.020834001736167, 0, 0, 1);
+                moveBot(94.12500767708399, 0, 0, -1);
                 sleep(500);
                 trussArm();
                 sleep(500);
-                moveBot(302.27085852257158, 1, 0, 0);
+                moveBot(276.37502303125194, 1, 0, 0);
                 break;
             // TODO
             case CENTER:
                 return;
             case RIGHT:
                 sleep(500);
-                moveBot(27.041668920139077, -1, 0, 0);
+                moveBot(41.79, -1, 0, 0);
                 sleep(500);
-                moveBot(92.12500767708399, 0, 0, 1);
+                turnBot(-115);
+                sleep(500);
+                moveBot(10.020834001736167, 0, 0, -1);
                 sleep(500);
                 trussArm();
                 sleep(500);
-                moveBot(276.37502303125194, 1, 0, 0);
+                moveBot(302.27085852257158, 1, 0, 0);
                 break;
         }
+                sleep(500);
+                moveBot(162.52084637673721, 0, 0, 1);
                 moveBot(36.55208637934054, 1, 0, 0);
 
 

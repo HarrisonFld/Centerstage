@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "AutoJavaBlueFrontBackdrop", group = "Auto")
+import org.firstinspires.ftc.teamcode.auto.AutoJava;
+
+@Autonomous(name = "AutoJavaBlueFrontBackdrop", group = "Archived")
 public class AutoJavaBlueFrontBackdrop extends AutoJava {
 
 

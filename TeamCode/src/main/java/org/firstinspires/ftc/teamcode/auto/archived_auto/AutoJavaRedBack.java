@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutoJavaBlueBack", group = "Auto")
-public class AutoJavaBlueBack extends AutoJavaBlueBackBase {
+@Autonomous(name = "AutoJavaRedBack", group = "Archived")
+public class AutoJavaRedBack extends AutoJavaRedBackBase {
 
 
-    public AutoJavaBlueBack() {
-        super(true);
+    public AutoJavaRedBack() {
+        super(false);
     }
 
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.newautoai;
+package org.firstinspires.ftc.teamcode.auto.auto_ai;
 
 import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvPipeline;

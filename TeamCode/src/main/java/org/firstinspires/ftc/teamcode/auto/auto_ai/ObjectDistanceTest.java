@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.newautoai;
+package org.firstinspires.ftc.teamcode.auto.auto_ai;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -7,10 +7,6 @@ import org.firstinspires.ftc.teamcode.auto.AutoJava;
 import org.firstinspires.ftc.teamcode.devices.CameraSpecs;
 import org.firstinspires.ftc.teamcode.devices.PropSpecs;
 import org.firstinspires.ftc.teamcode.devices.RobotSpecs;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.videoio.VideoCapture;
 
 import java.util.HashMap;
 

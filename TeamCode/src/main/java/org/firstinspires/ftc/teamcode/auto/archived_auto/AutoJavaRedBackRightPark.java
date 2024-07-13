@@ -1,13 +1,13 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.archived_auto;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutoJavaRedBackLeftPark", group = "Auto")
-public class AutoJavaRedBackLeftPark extends AutoJavaRedBackBase {
+@Autonomous(name = "AutoJavaRedBackRightPark", group = "Archived")
+public class AutoJavaRedBackRightPark extends AutoJavaRedBackBase {
 
 
-    public AutoJavaRedBackLeftPark() {
+    public AutoJavaRedBackRightPark() {
         super(false);
     }
 
@@ -53,8 +53,6 @@ public class AutoJavaRedBackLeftPark extends AutoJavaRedBackBase {
                 moveBot(276.37502303125194, 1, 0, 0);
                 break;
         }
-                sleep(500);
-                moveBot(162.52084637673721, 0, 0, -1);
                 moveBot(36.55208637934054, 1, 0, 0);
 
 
