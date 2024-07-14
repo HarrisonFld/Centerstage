@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.auto.auto_ai_test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.devices.CameraSpecs;
 import org.firstinspires.ftc.teamcode.devices.PropSpecs;
+import org.firstinspires.ftc.teamcode.devices.RobotSpecs;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 
@@ -52,7 +54,12 @@ public class AutoRunRobot extends AutoJava {
     }
 
     protected void afterStart(float distance) {
-        telemetry.addData("Distance approximated", distance);
+        telemetry.addData("Distance approximated:", distance);
+
+        //Horizontal distance calculated via the Pythagorean Theorem
+        distance = (float)(Math.pow(distance, 2) - Math.pow(RobotSpecs.cameraHeightFromGround, 2));
+        telemetry.addData("Horizontal distance approximated:", distance);
+
         moveBot((distance / 25.4), 0, 0, 1);
     }
 
