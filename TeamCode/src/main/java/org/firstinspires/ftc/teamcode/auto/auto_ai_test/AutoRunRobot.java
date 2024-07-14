@@ -22,7 +22,7 @@ import java.util.List;
 @Autonomous(name="Auto Run Robot", group="Auto")
 public class AutoRunRobot extends AutoJava {
 
-    protected AutoRunRobot(boolean blue) {
+    public AutoRunRobot(boolean blue) {
         super(blue);
     }
 
@@ -96,8 +96,7 @@ public class AutoRunRobot extends AutoJava {
         });
 
         //Default Async Camera
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened()
             {
