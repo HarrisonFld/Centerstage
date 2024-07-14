@@ -170,7 +170,9 @@ public class AutoRunRobot extends AutoJava {
         MatOfPoint largestContour = contours.stream().max(Comparator.comparingDouble(Imgproc::contourArea)).orElse(null);
 
         if (largestContour == null) {
-            throw new RuntimeException("No contours found");
+            telemetry.addLine("The largest contour wasn't found (Method findObject in AutoRunRobot):");
+            telemetry.update();
+            stop();
         }
 
         //Compute the bounding box of the largest contour
