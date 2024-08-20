@@ -88,7 +88,7 @@ public class AutoRunRobot extends AutoJava {
         camera.setPipeline(new OpenCvPipeline() {
             @Override
             public Mat processFrame(Mat input) {
-                if (currentFrame != null) {
+                if ((currentFrame == null)) {
                     currentFrame = input; //Pass the current frame into the global Mat
                 }
                 return input;
