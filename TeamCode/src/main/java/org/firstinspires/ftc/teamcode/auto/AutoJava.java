@@ -78,13 +78,13 @@ public abstract class AutoJava extends LinearOpMode {
             left_drive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        claw1 = hardwareMap.get(Servo.class, "claw");
-        elbowServo = hardwareMap.get(Servo.class, "elbow");
-        armServo = hardwareMap.get(Servo.class, "arm");
+//        claw1 = hardwareMap.get(Servo.class, "claw");
+//        elbowServo = hardwareMap.get(Servo.class, "elbow");
+//        armServo = hardwareMap.get(Servo.class, "arm");
 
-        claw1.setPosition(0.12);
-        armServo.setPosition(0.55);
-        elbowServo.setPosition(0.7);
+//        claw1.setPosition(0.12);
+//        armServo.setPosition(0.55);
+//        elbowServo.setPosition(0.7);
 
         powerFactor = 1;
 

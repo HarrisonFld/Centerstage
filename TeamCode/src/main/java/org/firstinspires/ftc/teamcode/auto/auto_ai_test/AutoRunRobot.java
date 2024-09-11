@@ -22,22 +22,29 @@ import java.util.List;
 @Autonomous(name="Auto Run Robot", group="Auto")
 public class AutoRunRobot extends AutoJava {
 
-    public AutoRunRobot(boolean blue) {
-        super(blue);
+    public AutoRunRobot() {
+        super(true);
     }
 
     @Override
     public void runOpMode() {
 
+        telemetry.addLine("Hi this is a test");
+        telemetry.update();
+
         this.initMotors();
         initCamera(432, 240);
 
-        float distanceToMoveMM = 0;
+        //sleep(1000);
 
         while(!opModeIsActive()) {
             telemetry.addLine("Waiting For Start");
-            distanceToMoveMM = beforeStart();
+            telemetry.update();
         }
+
+        float distanceToMoveMM = beforeStart();
+        telemetry.addLine(String.valueOf(distanceToMoveMM));
+        telemetry.update();
 
         //Distance should never be 0 when testing
         if(distanceToMoveMM == 0) {
@@ -49,18 +56,26 @@ public class AutoRunRobot extends AutoJava {
     }
 
     protected float beforeStart() {
+        while (currentFrame == null) {
+            idle();
+        }
         RotatedRect foundObject = findObject(currentFrame);
         return getApproximateDistanceMM(PropSpecs.propWidth, CameraSpecs.focalLength, (int)foundObject.size.width);
     }
 
-    protected void afterStart(float distance) {
-        telemetry.addData("Distance approximated:", distance);
+    protected void afterStart(float aproxDistance) {
+        telemetry.addData("Distance approximated:", aproxDistance);
+        telemetry.update();
 
+        sleep(3500);
         //Horizontal distance calculated via the Pythagorean Theorem
-        distance = (float)(Math.pow(distance, 2) - Math.pow(RobotSpecs.cameraHeightFromGround, 2));
+        //distance = (float)(Math.pow(distance, 2) - Math.pow(RobotSpecs.cameraHeightFromGround, 2));
+//        exacDistance = Math.sqrt(Math);
+        double distance = Math.sqrt((Math.pow(aproxDistance, 2) - Math.pow(RobotSpecs.cameraHeightFromGround, 2)));
         telemetry.addData("Horizontal distance approximated:", distance);
 
-        moveBot((distance / 25.4), 0, 0, 1);
+
+        moveBot(((distance / 25.4) * 3.34), 0, 0, 1);
     }
 
     /**
@@ -88,9 +103,15 @@ public class AutoRunRobot extends AutoJava {
         camera.setPipeline(new OpenCvPipeline() {
             @Override
             public Mat processFrame(Mat input) {
-                if ((currentFrame == null)) {
-                    currentFrame = input; //Pass the current frame into the global Mat
+                if (input == null) {
+                    return null;
                 }
+//                if ((currentFrame == null)) {
+//                    while (input == null) {
+//                        idle();
+//                    }
+                    currentFrame = input; //Pass the current frame into the global Mat
+//                }
                 return input;
             }
         });
